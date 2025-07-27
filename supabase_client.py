@@ -54,5 +54,9 @@ class SupabaseClient:
         return response.data
 
     def get_user(self, user_id):
-        response = self.supabase.table("users").select("*").eq("id", user_id).single().execute()
-        return response.data
+        response = self.supabase.table("users").select("*").eq("id", user_id).execute()
+        data = response.data
+        if data and len(data) == 1:
+            return data[0]
+        else:
+            return None

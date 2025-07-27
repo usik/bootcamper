@@ -19,9 +19,12 @@ def load_prompt(style: str) -> str:
         return f.read()
 
 def get_gpt_response(prompt_input: str, style: str):
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set. Please set your API key in the environment.")
+    client = openai.OpenAI(api_key=api_key)
     system_prompt = load_prompt(style)
-    
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": system_prompt},
@@ -29,7 +32,6 @@ def get_gpt_response(prompt_input: str, style: str):
         ],
         temperature=0.8
     )
-
     full_response = response.choices[0].message.content.strip()
 
     # 구조화된 응답을 위한 기본 패턴 가정
